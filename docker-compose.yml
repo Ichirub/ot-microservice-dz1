@@ -1,0 +1,33 @@
+version: '3.9'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: ./docker/app/Dockerfile
+    image: ot-microservice-dz1-app
+    container_name: ot-microservice-dz1-app
+    restart: unless-stopped
+    working_dir: /var/www
+    volumes:
+      - ./src:/var/www
+    networks:
+      - ot-microservice-dz1-net
+
+  webserver:
+    image: nginx:stable-alpine
+    container_name: ot-microservice-dz1-nginx
+    restart: unless-stopped
+    ports:
+      - 80:80
+    volumes:
+      - ./src:/var/www
+      - ./docker/webserver:/etc/nginx/conf.d/
+    networks:
+      - ot-microservice-dz1-net
+    depends_on:
+      - app
+
+networks:
+  ot-microservice-dz1-net:
+    driver: bridge
